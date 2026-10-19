@@ -1,0 +1,34 @@
+import socket
+import asyncio
+print('''
+	        ---MADE BY---
+███████╗ ██████╗ ██╗     ███╗   ███╗██╗  ██╗██████╗ 
+██╔════╝██╔═══██╗██║     ████╗ ████║██║  ██║██╔═══██╗
+███████╗██║   ██║██║     ██╔████╔██║███████║██████╔╝
+╚════██║██║▄▄ ██║██║     ██║╚██╔╝██║╚════██║██╔═══╝ 
+███████║╚██████╔╝███████╗██║ ╚═╝ ██║     ██║██║     
+╚══════╝ ╚══▀▀═╝ ╚══════╝╚═╝     ╚═╝     ╚═╝╚═╝     
+
+''')
+async def check_port(target_host, port, opened_ports):
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.setblocking(False)
+    loop = asyncio.get_running_loop()
+    try:
+        await asyncio.wait_for(loop.sock_connect(s, (target_host, port)), timeout=0.5)
+        print(f"Порт {port} открыт.")
+        opened_ports.append(port)
+    except (asyncio.TimeoutError, OSError):
+        pass
+    finally:
+        s.close()
+async def main():
+    target_host = input("Введите IP:")
+    opened_ports = []
+    tasks = [check_port(target_host, port, opened_ports) for port in range(1, 1000)]
+    await asyncio.gather(*tasks)
+    print(f'Все открытые порты:{opened_ports}.')
+asyncio.run(main())
+
+
+
